@@ -1,0 +1,63 @@
+# Laravel default ignores
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+
+# Environment files
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# IDE and editor files
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+.phpactor.json
+.phpunit.result.cache
+
+# Local development files
+Homestead.json
+Homestead.yaml
+
+# Dependency directories
+/node_modules
+/vendor
+
+# Logs
+npm-debug.log
+yarn-error.log
+
+# Unrelated project directories
+/speakurhands2
+/speakurhands
+speakurhands2/
+
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Testing
+/coverage
+
+# Local development
+.phpunit.cache
+.phpunit.result.cache
+
+# Debugbar
+/storage/debugbar/*
+!/storage/debugbar/.gitignore

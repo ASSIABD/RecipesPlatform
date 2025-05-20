@@ -1,0 +1,164 @@
+@extends('layouts.main')
+
+@section('styles')
+<style>
+    .favorite-heart {
+        cursor: pointer;
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+        position: absolute !important; /* This was in your original style */
+        z-index: 1000; /* This was in your original style */
+    }
+    .favorite-heart.active {
+        color: #ff4444; /* Red color for active/favorited heart */
+    }
+    /* Ensure the parent div of the heart icon is also clickable if it helps */
+    .heart-icon-container {
+        cursor: pointer; /* Make the container div also indicate it's clickable */
+        /* Add some padding if the icon itself is too small to click reliably, though 1.5rem should be fine */
+        /* padding: 5px; */ 
+    }
+</style>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Select all elements with the 'favorite-heart' class
+    const heartIcons = document.querySelectorAll('.favorite-heart');
+
+    heartIcons.forEach(function(heartIconEl) {
+        heartIconEl.addEventListener('click', function(event) {
+            // Crucial: Stop the event from doing its default action (like navigation)
+            event.preventDefault();
+            // Crucial: Stop the event from bubbling up to parent elements
+            event.stopPropagation();
+
+            // For debugging:
+            console.log('Heart icon clicked!');
+            console.log('Event target:', event.target); // Should be the <i> element
+            console.log('Event currentTarget:', event.currentTarget); // Should be the <i> element
+
+            const heart = event.currentTarget; // The <i> element itself
+
+            // Toggle the 'active' class for visual feedback (color change)
+            heart.classList.toggle('active');
+            
+            // Toggle FontAwesome classes for filled/empty heart
+            if (heart.classList.contains('active')) {
+                heart.classList.remove('fa-regular');
+                heart.classList.add('fa-solid');
+            } else {
+                heart.classList.remove('fa-solid');
+                heart.classList.add('fa-regular');
+            }
+
+            // The backend interaction (fetch call) remains commented out as per your request.
+            /*
+            const recipeId = heart.dataset.recipeId;
+            if (recipeId) {
+                // (async () => { // If you re-enable, make sure to handle async properly
+                //    try {
+                //        const response = await fetch(`{{ route('favorites.toggle', ['recipe' => '']) }}/${recipeId}`, {
+                //            method: 'POST',
+                //            headers: {
+                //                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                //                'Content-Type': 'application/json',
+                //            }
+                //        });
+                //        const data = await response.json();
+                //        if (data.status !== 'success') {
+                //            // Revert if server failed
+                //            heart.classList.toggle('active');
+                //            if (heart.classList.contains('active')) { // Re-check state
+                //                heart.classList.remove('fa-regular'); heart.classList.add('fa-solid');
+                //            } else {
+                //                heart.classList.remove('fa-solid'); heart.classList.add('fa-regular');
+                //            }
+                //        }
+                //    } catch (error) {
+                //        console.error('Error toggling favorite:', error);
+                //        // Revert on error
+                //        heart.classList.toggle('active');
+                //        if (heart.classList.contains('active')) { // Re-check state
+                //            heart.classList.remove('fa-regular'); heart.classList.add('fa-solid');
+                //        } else {
+                //            heart.classList.remove('fa-solid'); heart.classList.add('fa-regular');
+                //        }
+                //    }
+                // })();
+            } else {
+                console.error('Recipe ID not found on heart icon element.');
+            }
+            */
+            
+            // As an extra measure, returning false can also help prevent default browser actions in older contexts.
+            return false;
+        });
+    });
+
+    // For further debugging, if the above still fails:
+    // You might want to check if any parent of the heart icon has a click listener.
+    // For example, if the entire card is wrapped in an <a> tag or has a JS-driven click navigation.
+    // You can inspect this in your browser's developer tools (Elements tab, then Event Listeners sub-tab).
+});
+</script>
+@endsection
+
+@section('corps')
+<div class="container">
+    <h2 class="mb-4"><i class="bi bi-journal-richtext"></i> My Recipes</h2>
+    
+    @if(count($recipes) > 0)
+        <div class="row">
+            @foreach($recipes as $recipe)
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="position-relative">
+                            @if($recipe->image)
+                                <img src="{{ asset('storage/' . str_replace('/storage/', '', $recipe->image)) }}" class="card-img-top" alt="{{ $recipe->title }}" style="height: 200px; object-fit: cover;">
+                            @else
+                                <div class="bg-light text-center py-5">
+                                    <i class="bi bi-camera text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-2">No image available</p>
+                                </div>
+                            @endif
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-{{ $recipe->difficulty == 'easy' ? 'success' : ($recipe->difficulty == 'medium' ? 'warning' : 'danger') }}">
+                                    {{ ucfirst($recipe->difficulty) }}
+                                </span>
+                            </div>
+                            {{-- Added class 'heart-icon-container' to the div wrapping the icon --}}
+                            <div class="position-absolute top-0 start-0 m-2 heart-icon-container" style="z-index: 1000;">
+                                <i class="{{ auth()->check() && auth()->user()->favoriteRecipes()->where('recipe_id', $recipe->id)->exists() ? 'fa-solid' : 'fa-regular' }} fa-heart favorite-heart {{ auth()->check() && auth()->user()->favoriteRecipes()->where('recipe_id', $recipe->id)->exists() ? 'active' : '' }}" data-recipe-id="{{ $recipe->id }}" style="z-index: 1000;"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $recipe->title }}</h5>
+                            <p class="card-text text-muted mb-2">
+                                <i class="bi bi-person-circle"></i> {{ $recipe->user->name }} |
+                                <i class="bi bi-folder"></i> {{ $recipe->category->name }} |
+                                <i class="bi bi-clock"></i> {{ $recipe->duration }} min
+                            </p>
+                            <p class="card-text">{{ Str::limit($recipe->description, 100) }}</p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="{{ route('recipes.show', $recipe->id) }}" class="btn btn-outline-danger">
+                                <i class="bi bi-eye"></i> View Recipe
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        
+        <div class="d-flex justify-content-center mt-4">
+            {{ $recipes->links() }}
+        </div>
+    @else
+        <div class="alert alert-info">
+            <p class="mb-0">No recipes found. <a href="{{ route('recipes.create') }}" class="alert-link">Be the first to add one!</a></p>
+        </div>
+    @endif
+</div>
+@endsection
