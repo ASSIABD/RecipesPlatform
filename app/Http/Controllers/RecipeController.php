@@ -12,7 +12,7 @@ class RecipeController extends Controller
 {
     public function index1()
     {
-        $query = Recipe::with(['user', 'category']);
+        $query = Recipe::with(['user', 'category', 'ratings']);
 
         // Apply search filter
         if (request()->has('search')) {

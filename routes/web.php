@@ -12,6 +12,9 @@ use App\Http\Controllers\ProfileController;
 // Si vous avez un DashboardController, décommentez la ligne suivante et assurez-vous qu'il existe :
 // use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\RatingController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -100,5 +103,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register']);
 });
 */
+Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
 
 ?>

@@ -682,7 +682,21 @@
                                 </div>
                                 <h6 class="card-title">{{ $recipe->title }}</h6>
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-warning">★★★★☆</span>
+                                    @php
+    $rating = round($recipe->averageRating() * 2) / 2; // round to nearest 0.5
+@endphp
+<div class="text-warning">
+    @for ($i = 1; $i <= 5; $i++)
+        @if ($rating >= $i)
+            <i class="bi bi-star-fill"></i>
+        @elseif ($rating + 0.5 == $i)
+            <i class="bi bi-star-half"></i>
+        @else
+            <i class="bi bi-star"></i>
+        @endif
+    @endfor
+</div>
+
                                     <small class="text-muted">{{ $recipe->duration ?? 'N/A' }} min</small>
                                 </div>
                                 <div class="d-flex align-items-center mt-2">

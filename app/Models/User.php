@@ -22,10 +22,13 @@ class User extends Authenticatable
     /**
      * Get all of the user's recipes.
      */
+    // Inside User.php model class
+
     public function recipes()
     {
-        return $this->hasMany(Recipe::class);
+        return $this->hasMany(\App\Models\Recipe::class);
     }
+
 
     /**
      * Get all of the user's favorite items.

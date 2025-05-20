@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Favorite;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Artisan;
 
 class Recipe extends Model
 {
@@ -39,6 +40,11 @@ class Recipe extends Model
     public function ratings()
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function averageRating()
+    {
+        return $this->ratings()->avg('rating') ?? 0;
     }
 
     /**
@@ -86,7 +92,7 @@ class Recipe extends Model
         
         // Check if the symlink exists and is valid
         if (!is_link(public_path('storage'))) {
-            \Artisan::call('storage:link');
+            Artisan::call('storage:link');
         }
         
         // Check if the file exists in the public storage directory
@@ -108,10 +114,5 @@ class Recipe extends Model
         
         // If we can't find the file, return a placeholder
         return asset('images/placeholder.jpg');
-    }
-
-    public function averageRating()
-    {
-        return $this->ratings()->avg('rating');
     }
 }

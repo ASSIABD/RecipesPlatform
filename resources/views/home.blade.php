@@ -40,6 +40,21 @@
                                                 <a href="{{ route('recipes.show', $recipe) }}" class="text-decoration-none">
                                                     {{ $recipe->title }}
                                                 </a>
+                                                @php
+                                                    $rating = round($recipe->averageRating() * 2) / 2;
+                                                @endphp
+                                                <div class="text-warning small">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($rating >= $i)
+                                                            <i class="bi bi-star-fill"></i>
+                                                        @elseif ($rating + 0.5 == $i)
+                                                            <i class="bi bi-star-half"></i>
+                                                        @else
+                                                            <i class="bi bi-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                    <small class="text-muted ms-1">({{ number_format($recipe->averageRating(), 1) }})</small>
+                                                </div>
                                             </td>
                                             <td>{{ $recipe->category->name }}</td>
                                             <td>{{ $recipe->created_at->format('d/m/Y') }}</td>

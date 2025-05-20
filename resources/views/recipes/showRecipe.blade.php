@@ -33,8 +33,6 @@
         </form>
     </div>
 
-    
-
     <!-- Recipe Cards -->
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         @foreach ($recipes as $recipe)
@@ -42,18 +40,10 @@
             <a href="{{ route('recipes.show', $recipe->id) }}" class="text-decoration-none text-dark">
                 <div class="card h-100 shadow-sm">
                     @php
-                        // Use the model's image_url accessor which already handles all the path logic
                         $imageUrl = $recipe->image_url;
                         $placeholder = asset('images/placeholder.jpg');
-                        
-                        // Check if the image exists
-                        $imageExists = true;
-                        if (empty($recipe->image)) {
-                            $imagePath = $placeholder;
-                            $imageExists = false;
-                        } else {
-                            $imagePath = $imageUrl;
-                        }
+                        $imageExists = !empty($recipe->image);
+                        $imagePath = $imageExists ? $imageUrl : $placeholder;
                     @endphp
                     <div style="height: 160px; overflow: hidden; position: relative; background-color: #f8f9fa;">
                         @if($imageExists)
@@ -77,7 +67,21 @@
                         </div>
                         <h6 class="card-title">{{ $recipe->title }}</h6>
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-warning">★★★★☆</span>
+                            @php
+                                $rating = round($recipe->averageRating() * 2) / 2;
+                            @endphp
+                            <span class="text-warning">
+                                @for ($i = 1; $i <= 5; $i++)
+                                    @if ($rating >= $i)
+                                        <i class="bi bi-star-fill"></i>
+                                    @elseif ($rating + 0.5 == $i)
+                                        <i class="bi bi-star-half"></i>
+                                    @else
+                                        <i class="bi bi-star"></i>
+                                    @endif
+                                @endfor
+                                <small class="text-muted ms-1">({{ $recipe->ratings()->count() }})</small>
+                            </span>
                             <small class="text-muted">{{ $recipe->duration ?? 'N/A' }} min</small>
                         </div>
                         <div class="d-flex align-items-center mt-2">
@@ -85,7 +89,6 @@
                             <small class="text-muted">Save</small>
                         </div>
                     </div>
-
                 </div>
             </a>
         </div>
@@ -97,11 +100,12 @@
     </div>
 </div>
 
-<!-- Script pour changer l'icône -->
+<!-- Toggle heart icon -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.toggle-heart').forEach(function(icon) {
-            icon.addEventListener('click', function () {
+            icon.addEventListener('click', function (event) {
+                event.preventDefault(); // Prevent navigation if inside <a>
                 this.classList.toggle('bi-heart');
                 this.classList.toggle('bi-heart-fill');
             });
