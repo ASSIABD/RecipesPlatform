@@ -5,10 +5,11 @@
     <div class="container mt-5">
         <div class="row">
             <!-- MAIN CONTENT -->
-            <div class="col-md-8">
+            <div class="{{ in_array(request()->route()->getName(), ['recipes.create', 'login', 'register']) ? 'col-12' : 'col-md-8' }}">
                 @yield('corps') <!-- Zone vide adaptable -->
             </div>
 
+            @if(!in_array(request()->route()->getName(), ['recipes.create', 'login', 'register']))
             <!-- SIDEBAR -->
             <div class="col-md-4">
                 <!-- Search Box -->
@@ -62,8 +63,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
+            @endif
         </div>
     </div>
 

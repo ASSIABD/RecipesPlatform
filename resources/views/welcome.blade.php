@@ -615,7 +615,7 @@
             }
         }
     </style>
-    <section class="hero-section">
+      <section class="hero-section">
         <div class="container">
             <div class="hero-content">
                 <h1>Cook & Share</h1>
@@ -627,85 +627,54 @@
             </div>
         </div>
     </section>
-
     <!-- LATEST RECIPES SECTION -->
-    <section class="latest-recipes-section">
+    <section class="latest-recipes-section py-5">
         <div class="container">
-            <h2>Latest Recipes</h2>
-            <p class="section-description">
-                Discover our latest culinary creations.
-            </p>
+            <h2 class="mb-3">Latest Recipes</h2>
+            <p class="text-muted">Discover our latest culinary creations.</p>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mt-4">
                 @foreach($latestRecipes as $recipe)
                 <div class="col">
-                    <a href="{{ route('recipes.show', $recipe) }}" class="text-decoration-none text-dark">
-                        <div class="card h-100 shadow-sm">
+                    <div class="card h-100 shadow-sm">
+                        <a href="{{ route('recipes.show', $recipe) }}" class="text-decoration-none text-dark">
                             @php
-                                // Use the model's image_url accessor which already handles all the path logic
                                 $imageUrl = $recipe->image_url;
                                 $placeholder = asset('images/placeholder.jpg');
-                                
-                                // Check if the image exists
-                                $imageExists = true;
-                                if (empty($recipe->image)) {
-                                    $imagePath = $placeholder;
-                                    $imageExists = false;
-                                } else {
-                                    $imagePath = $imageUrl;
-                                }
+                                $imagePath = $recipe->image ? $imageUrl : $placeholder;
                             @endphp
-                            <div style="height: 160px; overflow: hidden; position: relative; background-color: #f8f9fa;">
-                                @if($imageExists)
-                                <img src="{{ $imagePath }}" 
-                                     class="card-img-top w-100 h-100" 
-                                     style="object-fit: cover;" 
-                                     alt="{{ $recipe->title }}" 
-                                     onerror="this.onerror=null; this.src='{{ $placeholder }}'"
-                                     loading="lazy"
-                                     referrerpolicy="no-referrer">
-                                @else
-                                <div class="w-100 h-100 d-flex align-items-center justify-content-center">
-                                    <i class="bi bi-image text-muted" style="font-size: 3rem;"></i>
-                                </div>
-                                @endif
+                            <div style="height: 160px; overflow: hidden; background-color: #f8f9fa;">
+                                <img src="{{ $imagePath }}" class="card-img-top w-100 h-100" style="object-fit: cover;" alt="{{ $recipe->title }}" onerror="this.onerror=null; this.src='{{ $placeholder }}'" loading="lazy">
                             </div>
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-2">
-                                    <img src="{{ $recipe->user->avatar_url }}" 
-                                         class="rounded-circle me-2" 
-                                         width="30" 
-                                         height="30" 
-                                         alt="{{ $recipe->user->name }}" 
-                                         style="object-fit: cover;"
-                                         onerror="this.onerror=null; this.src='{{ asset('avatars/avatarInconnue.jpg') }}'">
-                                    <small class="text-muted">{{ $recipe->user->name }}</small>
-                                </div>
-                                <h6 class="card-title">{{ $recipe->title }}</h6>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    @php
-    $rating = round($recipe->averageRating() * 2) / 2; // round to nearest 0.5
-@endphp
-<div class="text-warning">
-    @for ($i = 1; $i <= 5; $i++)
-        @if ($rating >= $i)
-            <i class="bi bi-star-fill"></i>
-        @elseif ($rating + 0.5 == $i)
-            <i class="bi bi-star-half"></i>
-        @else
-            <i class="bi bi-star"></i>
-        @endif
-    @endfor
-</div>
-
-                                    <small class="text-muted">{{ $recipe->duration ?? 'N/A' }} min</small>
-                                </div>
-                                <div class="d-flex align-items-center mt-2">
-                                    <i class="bi bi-heart toggle-heart text-danger me-1" style="cursor: pointer;"></i>
-                                    <small class="text-muted">Save</small>
-                                </div>
+                        </a>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-2">
+                                <img src="{{ $recipe->user->avatar_url }}" class="rounded-circle me-2" width="30" height="30" alt="{{ $recipe->user->name }}" style="object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('avatars/avatarInconnue.jpg') }}'">
+                                <small class="text-muted">{{ $recipe->user->name }}</small>
                             </div>
+                            <h6 class="card-title">{{ $recipe->title }}</h6>
+                            <div class="d-flex justify-content-between align-items-center">
+                                @php $rating = round($recipe->averageRating() * 2) / 2; @endphp
+                                <div class="text-warning">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        @if ($rating >= $i)
+                                            <i class="bi bi-star-fill"></i>
+                                        @elseif ($rating + 0.5 == $i)
+                                            <i class="bi bi-star-half"></i>
+                                        @else
+                                            <i class="bi bi-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <small class="text-muted">{{ $recipe->duration ?? 'N/A' }} min</small>
+                            </div>
+                            @auth
+                            <div class="d-flex align-items-center mt-2">
+                                <i class="bi bi-heart toggle-heart text-secondary me-1" style="cursor: pointer;" data-id="{{ $recipe->id }}"></i>
+                                <small class="text-muted">Save</small>
+                            </div>
+                            @endauth
                         </div>
-                    </a>
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -713,101 +682,54 @@
     </section>
 
     <!-- FOOTER -->
-    <footer class="footer">
-        <div class="container">
-            <p> {{ date('Y') }} Cook & Share. All Rights Reserved.</p>
+    <footer class="footer bg-light py-3 mt-5">
+        <div class="container text-center">
+            <p>{{ date('Y') }} Cook & Share. All Rights Reserved.</p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // The JavaScript for toggling the heart icon may no longer be needed for these specific cards
-        // as the heart icon has been removed from their footers.
-        // However, it's kept here in case it's used elsewhere on the page or if you decide to reintroduce favorites.
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click event listener to all heart icons with class .save-btn-icon
-            // (Updated selector to be more specific if you keep the JS)
-            document.querySelectorAll('.save-btn i.fa-heart').forEach(function(heart) { // Adjusted selector if it's still FontAwesome
-                const form = heart.closest('form');
-                if (!form) return; // If heart is not in a form, skip
+        document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-                heart.addEventListener('click', async function(e) {
+    document.querySelectorAll('.toggle-heart').forEach(function (heartIcon) {
+        heartIcon.addEventListener('click', async function () {
+            const recipeId = this.getAttribute('data-id');
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script>
-            // The JavaScript for toggling the heart icon may no longer be needed for these specific cards
-            // as the heart icon has been removed from their footers.
-            // However, it's kept here in case it's used elsewhere on the page or if you decide to reintroduce favorites.
-            document.addEventListener('DOMContentLoaded', function() {
-                // Add click event listener to all heart icons with class .save-btn-icon
-                // (Updated selector to be more specific if you keep the JS)
-                document.querySelectorAll('.save-btn i.fa-heart').forEach(function(heart) { // Adjusted selector if it's still FontAwesome
-                    const form = heart.closest('form');
-                    if (!form) return; // If heart is not in a form, skip
-
-                    heart.addEventListener('click', async function(e) {
-                        e.stopPropagation(); 
-                        e.preventDefault(); 
-
-                        // Check for CSRF token
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]');
-                        if (!csrfToken) {
-                            console.error('CSRF token not found!');
-                            return;
-                        }
-
-                        try {
-                            const response = await fetch(form.action, {
-                                method: 'POST',
-                                headers: {
-                                    'X-CSRF-TOKEN': csrfToken.content,
-                                    'Content-Type': 'application/json',
-                                    'Accept': 'application/json' // Good practice
-                                },
-                                // body: JSON.stringify({}) // If you need to send data
-                            });
-
-                            if (!response.ok) { // Check for HTTP errors
-                                const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
-                                console.error('Error status:', response.status, 'Message:', errorData.message);
-                                // Optionally revert icon state here
-                                return;
-                            }
-                            
-                            const data = await response.json();
-
-                            if (data.success) {
-                                if (data.favorited) {
-                                    heart.classList.remove('text-secondary');
-                                    heart.classList.add('text-danger');
-                                    heart.classList.remove('far'); // If using FA for empty
-                                    heart.classList.add('fas');   // If using FA for filled
-                                } else {
-                                    heart.classList.remove('text-danger');
-                                    heart.classList.add('text-secondary');
-                                    heart.classList.remove('fas'); // If using FA for filled
-                                    heart.classList.add('far');   // If using FA for empty
-                                }
-                            } else {
-                                console.error('Toggle favorite error:', data.message);
-                            }
-                        } catch (error) {
-                            console.error('Fetch error:', error);
-                        }
-                    } catch (error) {
-                        console.error('Fetch error:', error);
+            try {
+                const response = await fetch(`/recipes/${recipeId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
                     }
                 });
 
-                // Non-JS fallback handling might be different now
-                // form.addEventLiDB_CONNECTION=mysql
-                DB_HOST=127.0.0.1
-                DB_PORT=3306
-                DB_DATABASE=your_database_name
-                DB_USERNAME=your_username
-                DB_PASSWORD=your_passwordstener('submit', function(e) { ... });
-            });
+                const data = await response.json();
+
+                if (data.favorited) {
+                    // Cœur plein rouge
+                    this.classList.remove('text-secondary');
+                    this.classList.add('text-danger');
+
+                    this.classList.remove('bi-heart');
+                    this.classList.add('bi-heart-fill');
+                } else {
+                    // Cœur vide gris
+                    this.classList.remove('text-danger');
+                    this.classList.add('text-secondary');
+
+                    this.classList.remove('bi-heart-fill');
+                    this.classList.add('bi-heart');
+                }
+            } catch (error) {
+                console.error('Error toggling favorite:', error);
+            }
         });
+    });
+});
+
     </script>
 </body>
 </html>

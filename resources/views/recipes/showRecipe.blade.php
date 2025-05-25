@@ -44,6 +44,9 @@
                         $placeholder = asset('images/placeholder.jpg');
                         $imageExists = !empty($recipe->image);
                         $imagePath = $imageExists ? $imageUrl : $placeholder;
+
+                        $isFavorited = auth()->check() && auth()->user()->favoriteRecipes->contains($recipe->id);
+                        $heartClass = $isFavorited ? 'bi-heart-fill text-danger' : 'bi-heart text-secondary';
                     @endphp
                     <div style="height: 160px; overflow: hidden; position: relative; background-color: #f8f9fa;">
                         @if($imageExists)
@@ -85,7 +88,17 @@
                             <small class="text-muted">{{ $recipe->duration ?? 'N/A' }} min</small>
                         </div>
                         <div class="d-flex align-items-center mt-2">
-                            <i class="bi bi-heart toggle-heart text-danger me-1" style="cursor: pointer;"></i>
+                            {{-- Cœur toggle favori avec data-id et classes dynamiques --}}
+                            @if(auth()->check())
+                            <i 
+                               class="bi toggle-heart me-1 {{ $heartClass }}" 
+                               style="cursor: pointer; font-size: 1.2rem;"
+                               data-id="{{ $recipe->id }}"
+                               title="{{ $isFavorited ? 'Retirer des favoris' : 'Ajouter aux favoris' }}">
+                            </i>
+                            @else
+                            <i class="bi bi-heart text-secondary me-1" style="font-size: 1.2rem;" title="Connectez-vous pour ajouter aux favoris"></i>
+                            @endif
                             <small class="text-muted">Save</small>
                         </div>
                     </div>
@@ -100,16 +113,51 @@
     </div>
 </div>
 
-<!-- Toggle heart icon -->
+{{-- CSRF token meta pour AJAX --}}
+<meta name="csrf-token" content="{{ csrf_token() }}">
+
+{{-- Script AJAX toggle favori --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.toggle-heart').forEach(function(icon) {
-            icon.addEventListener('click', function (event) {
-                event.preventDefault(); // Prevent navigation if inside <a>
-                this.classList.toggle('bi-heart');
-                this.classList.toggle('bi-heart-fill');
-            });
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    document.querySelectorAll('.toggle-heart').forEach(function(icon) {
+        icon.addEventListener('click', async function (event) {
+            event.preventDefault();
+
+            const recipeId = this.getAttribute('data-id');
+            const iconElement = this;
+
+            try {
+                const response = await fetch(`/recipes/${recipeId}/favorite`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({})
+                });
+
+                if (!response.ok) throw new Error('Erreur réseau');
+
+                const data = await response.json();
+
+                if (data.favorited) {
+                    iconElement.classList.remove('bi-heart', 'text-secondary');
+                    iconElement.classList.add('bi-heart-fill', 'text-danger');
+                    iconElement.setAttribute('title', 'Retirer des favoris');
+                } else {
+                    iconElement.classList.remove('bi-heart-fill', 'text-danger');
+                    iconElement.classList.add('bi-heart', 'text-secondary');
+                    iconElement.setAttribute('title', 'Ajouter aux favoris');
+                }
+            } catch (error) {
+                console.error('Erreur lors du toggle favori:', error);
+                alert('Impossible de modifier les favoris pour le moment.');
+            }
         });
     });
+});
 </script>
 @endsection

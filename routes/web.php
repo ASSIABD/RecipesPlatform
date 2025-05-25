@@ -13,6 +13,7 @@ use App\Http\Controllers\ProfileController;
 // use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\CommentController;
 
 
 
@@ -46,6 +47,8 @@ Route::middleware(['auth'])->group(function () {
     // Routes pour les favoris
     Route::get('/favorites', [FavoriteController::class, 'index'])->name('favorites.index');
     Route::post('/recipes/{recipe}/favorite', [FavoriteController::class, 'toggleFavorite'])->name('recipes.favorite.toggle'); // Route plus RESTful
+    Route::delete('/favorites/{recipe}', [FavoriteController::class, 'destroy'])->name('favorites.destroy');
+
     // Les routes check et count pourraient être gérées via des appels API ou des composants dynamiques si besoin.
     // Route::get('/favorites/{id}/check', [FavoriteController::class, 'checkFavorite'])->name('favorites.check');
     // Route::get('/favorites/count', [FavoriteController::class, 'count'])->name('favorites.count');
@@ -84,12 +87,10 @@ Route::resource('recipes', RecipeController::class);
 // Route::resource('recipes', RecipeController::class)->middleware('auth')->except(['index', 'show']);
 // Ou protéger individuellement dans le constructeur du RecipeController.
 
-// Routes pour le ChatBot
 Route::get('/chatbot', function () {
     return view('chatbot');
 })->name('chatbot.show');
 Route::post('/chatbot', [ChatbotController::class, 'respond'])->name('chatbot.respond');
-
 // Routes d'authentification générées par Laravel UI/Breeze/Jetstream
 Auth::routes(['logout' => false]); // Inclut login, register, password reset, etc. MAIS désactive la route logout de Auth::routes() car on l'a définie manuellement dans le groupe 'auth'.
 
@@ -104,5 +105,9 @@ Route::middleware('guest')->group(function () {
 });
 */
 Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+//ajout d'un commentaire
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store');
+
+
 
 ?>

@@ -58,8 +58,11 @@
                                     <a class="dropdown-item" href="{{ route('profile.show') }}">
                                         {{ __('My Profile') }}
                                     </a>
+                                    
+
                                     <a class="dropdown-item" href="{{ route('favorites.index') }}">
                                         {{ __('Favorites') }}
+                                        
                                     </a>
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();

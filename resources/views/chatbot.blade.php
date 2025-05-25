@@ -38,14 +38,15 @@
         input.value = '';
 
         // Envoie à l’API Laravel
-        const response = await fetch('/api/chatbot', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ message })
-        });
+        const response = await fetch('/chatbot', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+    },
+    body: JSON.stringify({ message })
+});
+
 
         const data = await response.json();
 

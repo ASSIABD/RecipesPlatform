@@ -130,12 +130,15 @@
                             <li><a class="dropdown-item" href="{{ route('profile.show') }}">
                                 <i class="bi bi-person me-2"></i>My Profile
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ route('favorites.index') }}">
+                            <li>
+                            <a class="dropdown-item" href="{{ route('favorites.index') }}">
                                 <i class="bi bi-heart me-2"></i>Favorites
-                                <span class="badge bg-danger rounded-pill ms-2">
+                                <span id="favorites-count" class="badge bg-danger rounded-pill ms-2">
                                     {{ auth()->user()->favorites()->where('item_type', 'App\Models\Recipe')->count() }}
                                 </span>
-                            </a></li>
+                            </a>
+                        </li>
+
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST">
