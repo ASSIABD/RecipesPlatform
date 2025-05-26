@@ -1,0 +1,64 @@
+# Server Requirements
+PHP >= 8.2.0
+BCMath PHP Extension
+Ctype PHP Extension
+cURL PHP Extension
+DOM PHP Extension
+Fileinfo PHP Extension
+JSON PHP Extension
+Mbstring PHP Extension
+OpenSSL PHP Extension
+PCRE PHP Extension
+PDO PHP Extension
+pdo_mysql PHP Extension
+Tokenizer PHP Extension
+XML PHP Extension
+
+# Required PHP Extensions
+ext-bcmath
+ext-ctype
+ext-curl
+ext-dom
+ext-fileinfo
+ext-json
+ext-mbstring	ext-openssl
+ext-pdo
+ext-pdo_mysql
+ext-tokenizer	ext-xml
+
+# Node.js and NPM
+Node.js >= 16.0.0
+NPM >= 8.0.0
+
+# Database
+MySQL >= 5.7 or MariaDB >= 10.3
+
+# Web Server
+Apache with mod_rewrite or Nginx
+
+# Composer Dependencies
+laravel/framework ^12.0
+laravel/tinker ^2.10.1
+laravel/ui ^4.6
+
+# Development Dependencies (optional)
+phpunit/phpunit ^11.5.3
+mockery/mockery ^1.6
+nunomaduro/collision ^8.6
+fakerphp/faker ^1.23
+
+# Additional Requirements
+- Fileinfo PHP extension must be enabled for file uploads
+- GD Library or Imagick PHP extension for image processing
+- Composer for dependency management
+
+# Installation Instructions
+1. Install PHP 8.2+ with required extensions
+2. Install Node.js and NPM
+3. Install MySQL or MariaDB
+4. Run `composer install`
+5. Run `npm install`
+6. Configure .env file with database credentials
+7. Run `php artisan key:generate`
+8. Run database migrations with `php artisan migrate`
+9. Start the development server with `php artisan serve`
